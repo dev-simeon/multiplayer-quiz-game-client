@@ -1,0 +1,177 @@
+body {
+  font-family: sans-serif;
+}
+
+/* Example: Style for active player's turn indicator */
+.active-turn {
+  font-weight: bold;
+  color: #0d6efd; /* Bootstrap primary blue */
+}
+
+/* Style for disabled answer options to make it clear */
+.answer-option:disabled {
+  background-color: #e9ecef;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Style for highlighting correct/incorrect answers */
+.answer-option.correct {
+  background-color: #d1e7dd !important; /* Bootstrap success green */
+  border-color: #badbcc !important;
+}
+
+.answer-option.incorrect {
+  background-color: #f8d7da !important; /* Bootstrap danger red */
+  border-color: #f5c2c7 !important;
+}
+
+/* Add more custom styles as needed */
+#timerDisplay {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+#lobbyRoomCode {
+  background-color: #f0f0f0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+/* Toast container for notifications (bottom right) */
+#toastContainer {
+  z-index: 1080;
+  /* Already set inline in HTML, but keep for clarity */
+}
+@media (max-width: 576px) {
+  #toastContainer {
+    right: 0.5rem;
+    left: 0.5rem;
+    bottom: 0.5rem;
+    width: auto;
+    max-width: 95vw;
+  }
+}
+
+/* Modern avatar style for player circles */
+.avatar {
+  background: linear-gradient(135deg, #6f42c1 0%, #0d6efd 100%);
+  color: #fff;
+  font-weight: bold;
+  border: 2px solid #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.card {
+  border-radius: 1.5rem !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08) !important;
+}
+
+/* Responsive gap for player avatars */
+#playerList {
+  gap: 1rem;
+}
+
+/* Progress bar for timer */
+#timerProgress {
+  transition: width 0.3s linear;
+}
+
+/* Make sure the lobby/game cards are centered and have padding on mobile */
+@media (max-width: 576px) {
+  .card {
+    padding: 1rem !important;
+    border-radius: 1rem !important;
+  }
+}
+
+/* Main card width for views */
+.main-card {
+  max-width: 700px;
+  width: 100%;
+}
+.game-main-card {
+  max-width: 600px;
+  width: 100%;
+}
+@media (max-width: 576px) {
+  .main-card, .game-main-card {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+}
+/* Optionally, keep summary grid from stretching too wide on large screens */
+#summaryQuestions .row {
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* --- Results/summary view polish --- */
+.question-summary-card {
+  transition: box-shadow 0.2s, transform 0.2s;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  border-radius: 1.25rem !important;
+}
+.question-summary-card:hover {
+  box-shadow: 0 6px 24px rgba(0,0,0,0.13);
+  transform: translateY(-2px) scale(1.02);
+  z-index: 2;
+}
+@media (max-width: 576px) {
+  .question-summary-card .card-body {
+    padding: 0.75rem 0.75rem;
+    font-size: 0.98rem;
+  }
+  .question-summary-card {
+    margin-bottom: 0.5rem;
+  }
+}
+.avatar {
+  width: 48px !important;
+  height: 48px !important;
+  font-size: 1.3rem !important;
+  border-radius: 50% !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #6f42c1 0%, #0d6efd 100%);
+  color: #fff;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+/* Progress bar under score in overview card */
+.card .progress {
+  background: #e9ecef;
+  border-radius: 6px;
+  height: 8px;
+  margin-bottom: 0.25rem;
+}
+.card .progress-bar {
+  border-radius: 6px;
+  transition: width 1s cubic-bezier(.4,2,.6,1);
+}
+/* Confetti canvas always on top */
+#confettiCanvas {
+  z-index: 2000 !important;
+}
+/* Animate.css fadeInDown/fadeInUp fallback if not loaded */
+.animate__animated.animate__fadeInDown {
+  animation: fadeInDown 0.7s;
+}
+.animate__animated.animate__fadeInUp {
+  animation: fadeInUp 0.7s;
+}
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: none; }
+}

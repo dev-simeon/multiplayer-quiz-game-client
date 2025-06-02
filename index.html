@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiplayer Quiz Game</title>
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Quiz Game</a>
+            <div id="userInfo" class="text-light">Not logged in</div>
+            <button id="logoutButton" class="btn btn-sm btn-outline-light" style="display: none;">Logout</button>
+        </div>
+    </nav>
+
+    <!-- AUTH VIEW -->
+    <div id="authView" style="display: none;">
+        <div class="container d-flex justify-content-center align-items-center min-vh-100">
+            <div class="card main-card shadow-lg rounded-4 p-4">
+                <h2 class="mb-3 fw-bold">Login or Sign Up</h2>
+                <p>Please log in to create or join a game.</p>
+                <div id="firebaseui-auth-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Room Management VIEW -->
+    <div id="roomManagementView" style="display: none;">
+        <div class="container d-flex justify-content-center align-items-center min-vh-100">
+            <div class="card main-card shadow-lg rounded-4 p-4">
+                <h2 class="mb-3 fw-bold">Welcome, <span id="playerNameDisplay">Player</span>!</h2>
+                <hr>
+                <h4 class="mb-3">Create a New Game</h4>
+                <button id="createRoomButton" class="btn btn-primary w-100 mb-3">Create Room</button>
+                <hr>
+                <h4 class="mb-3">Join an Existing Game</h4>
+                <div class="input-group mb-3">
+                    <input type="text" id="roomCodeInput" class="form-control" placeholder="Enter Room Code">
+                    <button id="joinRoomButton" class="btn btn-success">Join Room</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOBBY (IN-GAME) VIEW -->
+    <div id="lobbyView" style="display: none;">
+        <div class="container d-flex justify-content-center align-items-center min-vh-100">
+            <div class="card main-card shadow-lg rounded-4 p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0 fw-bold">Lobby</h3>
+                    <span class="badge bg-primary fs-6">Room: <span id="lobbyRoomCode">----</span></span>
+                    <button id="copyRoomCodeButton" class="btn btn-outline-secondary btn-sm ms-2" data-bs-toggle="tooltip" data-bs-title="Copy Room Code">
+                        <i class="bi bi-clipboard"></i>
+                    </button>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex flex-wrap gap-3" id="playerList">
+                        <!-- Player avatars will be rendered here by JS -->
+                    </div>
+                </div>
+                <!-- Lobby Private Chat UI -->
+                <div class="mb-3" id="lobbyChatContainer">
+                  <div class="mb-2">
+                    <label for="chatRecipientSelect" class="form-label">Send message to:</label>
+                    <select id="chatRecipientSelect" class="form-select"></select>
+                  </div>
+                  <div class="mb-2" id="lobbyChatMessages" style="height:120px; overflow-y:auto; background:#f8f9fa; border-radius:6px; padding:8px; font-size:0.97em;"></div>
+                  <div class="input-group">
+                    <input type="text" id="lobbyChatInput" class="form-control" placeholder="Type a message...">
+                    <button id="lobbyChatSendButton" class="btn btn-outline-primary">Send</button>
+                  </div>
+                </div>
+                <div class="text-center text-muted mb-2" id="lobbyStatus">
+                    <div class="spinner-grow spinner-grow-sm text-primary me-1" role="status"></div>
+                    Waiting for players…
+                </div>
+                <button id="startGameButton" class="btn btn-lg btn-success w-100 mb-2" disabled>Start Game</button>
+                <button id="leaveRoomButtonLobby" class="btn btn-link w-100 text-danger">Leave Room</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- GAME VIEW -->
+    <div id="gameView" style="display: none;">
+        <div class="container d-flex justify-content-center align-items-center min-vh-100">
+            <div class="card game-main-card shadow-lg rounded-4 p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <div id="currentPlayerAvatar" class="avatar bg-gradient-primary text-white rounded-circle shadow" style="width:40px; height:40px; display:flex; align-items:center; justify-content:center; font-size:1.1rem;">JD</div>
+                        <span class="fw-semibold" id="turnIndicator">Waiting for game to start...</span>
+                    </div>
+                    <div>
+                        <span class="badge bg-secondary">Q <span id="currentQuestionNumber">0</span>/<span id="totalQuestionCount">0</span></span>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="progress" style="height: 8px;">
+                        <div id="timerProgress" class="progress-bar bg-success" role="progressbar" style="width: 100%;"></div>
+                    </div>
+                    <div class="text-end text-muted small" id="timerDisplay">--s</div>
+                </div>
+                <div class="mb-4">
+                    <h4 class="fw-bold" id="questionText">Question will appear here.</h4>
+                </div>
+                <div id="answerOptions" class="d-grid gap-3">
+                    <!-- Answer buttons will be rendered here by JS -->
+                </div>
+                <div class="mt-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="fw-semibold">Players:</span>
+                            <span id="gamePlayersList" class="badge bg-light text-dark"></span>
+                        </div>
+                        <div>
+                            <span class="fw-semibold">Score:</span>
+                            <span id="myScore" class="badge bg-success">0</span>
+                        </div>
+                    </div>
+                </div>
+                <button id="leaveRoomButtonGame" class="btn btn-link w-100 text-danger mt-3">Leave Game</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESULTS VIEW -->
+    <div id="resultsView" style="display: none;">
+        <div class="container d-flex justify-content-center align-items-center min-vh-100">
+            <div class="card main-card shadow-lg rounded-4 p-4">
+                <h2 class="fw-bold mb-3">Game Over!</h2>
+                <h4 class="mb-3">Final Scores:</h4>
+                <ul id="finalScoreBoard" class="list-group mb-3">
+                    <!-- Final scores will be rendered here by JS -->
+                </ul>
+                <h5 class="mb-2 mt-4">Summary of Questions</h5>
+                <div id="summaryQuestions" class="table-responsive mb-3">
+                    <!-- Summary table will be rendered here by JS -->
+                </div>
+                <button id="backToRoomManagementButton" class="btn btn-primary w-100">Play Again / New Game</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Toast Container for notifications -->
+    <div id="toastContainer" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080;"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script> 
+    <script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.js"></script>
+
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+" crossorigin="anonymous"></script>
+
+    <script src="js/auth.js"></script>
+    <script src="js/socketClient.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/gameClient.js"></script>
+    <script src="js/main.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
