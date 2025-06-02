@@ -10,7 +10,7 @@ const SocketClient = (() => {
       return;
     }
 
-    socket = io("https://multiplayer-quiz-game-server.railway.internal/", {
+    socket = io("https://multiplayer-quiz-game-server-production.up.railway.app", {
       // Assumes frontend and backend are same origin
       auth: {
         token: token,
